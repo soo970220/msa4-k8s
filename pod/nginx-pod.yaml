@@ -1,0 +1,24 @@
+# 호출할 API의 버전을 지정
+apiVersion: v1
+# 생성할 리소스를 지정
+kind: Pod
+
+# 생성할 리소스의 기본 정보
+metadata:
+  name: nginx-pod # 파드명 지정
+
+# 생성할 리소스의 상세 정보
+spec:
+  containers:
+    - name: nginx-container # 생성할 컨테이너명
+      image: nginx:latest # 컨테이너 생성시 사용할 이미지 지정
+      imagePullPolicy: IfNotPresent # 해당 이미지를 로컬에서 먼저 pull 시도하고, 없으면 레지스트리에서 pull
+      resources: # 해당 리소스가 사용할 하드웨어 리소스를 설정하는 속성
+        requests: # 생성할 리소스가 사용할 최소 보장 자원
+          memory: "128Mi" # Mi : 메가바이트, 1Mi = 1024 * 1024 byte
+          cpu: "250m"
+        limits: # 생성할 리소스가 사용할 최대 자원
+          memory: "256Mi"
+          cpu: "500m"
+      ports:
+        - containerPort: 80 # 컨테이너가 사용할 포트 지정
