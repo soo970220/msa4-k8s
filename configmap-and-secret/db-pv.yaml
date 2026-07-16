@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: PersistentVolume
+
+metadata:
+  name: db-pv
+
+spec:
+  storageClassName: db-storage # pv와 pvc의 storageClassName이 같아야 연결이 됨
+
+  # persistentVolumeReclaimPolicy: PVC가 삭제 될 경우, pv를 어떤 상태로 남겨둘것인가에 대한 설정
+  #   - Retain: PVC 삭제 될 경우, pv는 남겨두지만 `Released(휴면)`상태로 변하고, 다른 pvc가 즉시 재사용할 수 없는 상태
+  #   - Delete: PVC 삭제 될 경우, pv도 같이 삭제
+  persistentVolumeReclaimPolicy: Retain
+
+  capacity:
+    storage: 10Gi # 볼륨 사용할 용량 설정
+
+  accessModes: # 동시 얼마나 많은 노드가 어떤 권한으로 접근시킬지에 대한 설정
+    - ReadWriteOnce # 단일 노드에 의해서만 읽기/쓰기 가능
+
+  # -- 이하 실제 스토리지 설정 --
+  # 현업에서는 NFS와 같은 네트워크 스토리지를 이용하지만,
+  # 현 공부단계에서는 구축의 편의성을 위해서 `hostPath` 또는 `local`을 이용
+  # --------------------------
+  local: # PV의 저장소를 로컬 볼륨 타입으로 지정, k8s가 이 볼륨이 특정 노드에 묶여있다고 인지하고 관리
+    path: "/var/tmp/mysql-storage"
+
+  nodeAffinity: # 이 볼륨을 사용할 수 있는 노드의 조건을 강제로 설정
+    required: # Hard Rule(강제성이 띄는 규칙) 지정, 이 조건이 충족되지 못하면 pod는 Pending 상태에 머무르게 된다
+      nodeSelectorTerms: # 대상을 선택하기 위한 상세 조건들의 리스트
+        - matchExpressions: # 노드에 부여된 레이블을 기준으로 비교 연산 수행
+            - key: kubernetes.io/hostname # 비교할 노드의 라벨 키, 노드의 고유명을 그대로 사용하겠다.
+              operator: In # 비교연산자
+              values: # 실제 비교할 값
+                - desktop-worker # 노드의 실제 이름

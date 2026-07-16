@@ -8,11 +8,10 @@ spec:
   # - NodePort : 쿠버네티스 내부에서 해당 서비스에 접속하기 위한 포트를 열고 외부에서 접속 가능하도록 설정
   # - ClusterIP : 쿠버네티스 내부에서만 통신할 수 있는 IP주소를 부여, 외부에서는 접근불가
   # - LoadBalancer : 외부의 로드밸런서(AWS의 로드밸런서 등)를 활용해 외부에서 접속할 수 있도록 연결
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: nginx-app # 디플로이먼트의 'spec.template.metadata.labels.app'이 'nginx-app'로 시작하고, 현재 실행되고 있는 파드와 서비스를 연결
   ports:
     - protocol: TCP # 서비스가 사용할 프로토콜 지정
       targetPort: 80 # 맵핑할 파드가 사용할 포트 번호
-      port: 80 # 쿠버네테스 내부에서 서비스에 접속 할 포트 번호
-      nodePort: 30080 # 노드 외부에서 접속할 포트 번호 지정, 30000~32767 사이의 포트번호를 지정해야함
+      port: 30080 # 쿠버네테스 내부에서 서비스에 접속 할 포트 번호

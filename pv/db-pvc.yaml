@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+
+metadata:
+  name: db-pvc
+
+spec:
+  storageClassName: db-storage # pv와 pvc의 storageClassName이 같아야 연결됨
+  accessModes:
+    - ReadWriteOnce
+  resources: #PVC가 PV에 요청하는 리소스의 양을 정의
+    requests:
+      storage: 10Gi # PV에 설정한 크기보다 작거나 같아야 정상 할당 됨.

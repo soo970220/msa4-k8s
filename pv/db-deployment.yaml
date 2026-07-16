@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: db-deployment
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: db-pod
+
+  template:
+    metadata:
+      labels:
+        app: db-pod
+
+    spec:
+      containers:
+        - name: my-db
+          image: mysql:8.4
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: msa505
+            - name: TZ
+              value: Asia/Seoul
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+          # 컨테이너 내에서 어떤 경로를 불륨과 연결할지 지정
+          volumeMounts:
+            # `spec.template.spec.volumes.name`과 일치하게 작성
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+
+      # 파드가 사용할 불륨 지정
+      volumes:
+        # `spec.template.spec.containers.volumeMounts.name`과 일치하게 작성
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            # 연걸할 PVC명
+            claimName: db-pvc

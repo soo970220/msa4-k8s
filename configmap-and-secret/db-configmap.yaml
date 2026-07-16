@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: db-configmap
+
+data: # key: value 형식으로 설정값을 작성
+  TZ: Asia/Seoul
